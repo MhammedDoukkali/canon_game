@@ -23,7 +23,7 @@ class Obstacle (var obstacleDistance: Float,
     }
 
     fun draw(canvas:Canvas) {
-        obstaclePaint.color = Color.WHITE
+        obstaclePaint.color = Color.BLUE
         canvas.drawRect(obstacle, obstaclePaint)
     }
 }

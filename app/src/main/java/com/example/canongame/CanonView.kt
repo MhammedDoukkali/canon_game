@@ -21,6 +21,7 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
     val ball = CanonBall(this)
     val obstacle = Obstacle(0f, 0f , 0f, 0f,
         0f, this)
+    val target = Target(0f, 0f, 0f, 0f, 0f, this)
 
     init {
         backgroundPaint.color = Color.LTGRAY
@@ -59,6 +60,12 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
         obstacle.width = (w / 24f)
         obstacle.initialObstacleSpeed = (h / 2f)
         obstacle.setRect()
+        target.width = (w / 24f)
+        target.targetDistance = (w * 7 / 8f)
+        target.targetDebut = (h / 8f)
+        target.targetEnd = (h * 7 / 8f)
+        target.targetInitialSpeed = (-h / 4f)
+        target.setRect()
     }
     fun draw() {
         if(holder.surface.isValid) {
@@ -74,6 +81,7 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
             obstacle.draw(canvas)
             holder.unlockCanvasAndPost(canvas)
         }
+        target.draw(canvas)
 
     }
 
