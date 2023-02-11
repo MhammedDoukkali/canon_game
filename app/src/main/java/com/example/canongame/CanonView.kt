@@ -4,9 +4,12 @@ import android.content.Context
 import android.graphics.Paint
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Point
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import kotlin.math.atan
 
 class CanonView @JvmOverloads constructor(context: Context,
 attributes: AttributeSet? = null, defStyleAttr: Int = 0) :
@@ -17,12 +20,11 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
     var screenHeight = 0f
     var drawing = false
     lateinit var thread: Thread
-    val canon = Canon(70f, 20f, 0f, 0f, this)
-    val ball = CanonBall(this)
+    val canon = Canon(0f, 0f, 0f, 0f, this)
     val obstacle = Obstacle(0f, 0f , 0f, 0f,
         0f, this)
     val target = Target(0f, 0f, 0f, 0f, 0f, this)
-
+    val ball = CanonBall(this, obstacle, target)
     init {
         backgroundPaint.color = Color.LTGRAY
     }
@@ -38,8 +40,13 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
     }
 
     override fun run() {
+        var previousFrameTime = System.currentTimeMillis()
         while (drawing) {
+            val currentTime = System.currentTimeMillis()
+            val elapsedTimeMS = (currentTime-previousFrameTime).toDouble()
+            updatePositions(elapsedTimeMS)
             draw()
+            previousFrameTime = currentTime
         }
     }
 
@@ -53,7 +60,7 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
         canon.setFinCanon(h / 2f)
         ball.canonballRadius =(w / 36f)
         ball.canonballSpeed =(w * 3 / 2f)
-        ball.launch(0.0)
+//        ball.launch(0.0)
         obstacle.obstacleDistance = (w * 5 / 8f)
         obstacle.obstacleDebut = (h / 8f)
         obstacle.obstacleEnd = (h * 3 / 8f)
@@ -78,12 +85,51 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
 
             if(ball.canonballOnScreen)
                 ball.draw(canvas)
-            obstacle.draw(canvas)
+                obstacle.draw(canvas)
+                target.draw(canvas)
             holder.unlockCanvasAndPost(canvas)
+
         }
-        target.draw(canvas)
+
 
     }
+
+    fun updatePositions(elapsedTimeMS:Double) {
+        val interval = elapsedTimeMS / 1000.0
+        obstacle.update(interval)
+        target.update(interval)
+        ball.update(interval)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val action = event.action
+        if(action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
+            fireCanonball(event)
+        }
+        return true
+    }
+
+    fun fireCanonball(event: MotionEvent) {
+        var shotsFired = 0
+        if(! ball.canonballOnScreen) {
+            val angle =alignCanon(event)
+            ball.launch(angle)
+            ++shotsFired
+        }
+    }
+
+    fun alignCanon (event: MotionEvent): Double {
+        val touchPoint = Point(event.x.toInt(), event.y.toInt())
+        val centerMinusY = screenHeight / 2 - touchPoint.y
+        var angle = 0.0
+        if(centerMinusY != 0.0f)
+            angle = Math.atan((touchPoint.x).toDouble() /centerMinusY)
+        if (touchPoint.y > screenHeight / 2)
+            angle += Math.PI
+        canon.align(angle)
+        return angle
+    }
+
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int,
                                 width:Int, height:Int) {}

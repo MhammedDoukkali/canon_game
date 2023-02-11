@@ -19,4 +19,8 @@ var width : Float, val view: CanonView){
     fun setFinCanon(height: Float) {
         finCanon.set(canonLength, height)
     }
+    fun align(angle: Double) {
+        finCanon.x = (canonLength * Math.sin(angle)).toFloat()
+        finCanon.y = (-canonLength * Math.cos(angle) + view.screenHeight / 2).toFloat()
+    }
 }

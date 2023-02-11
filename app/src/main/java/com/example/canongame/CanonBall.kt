@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PointF
 
-class CanonBall (var view: CanonView){
+class CanonBall (var view: CanonView, val obstacle: Obstacle, val target: Target){
     var canonball = PointF()
     var canonballSpeed = 0f
     var canonballSpeedX = 0f
@@ -25,8 +25,39 @@ class CanonBall (var view: CanonView){
         canonballSpeedY =(-canonballSpeed*Math.cos(angle)).toFloat()
         canonballOnScreen = true
     }
+    fun update(interval : Double) {
+        if(canonballOnScreen) {
+            canonball.x += (interval * canonballSpeedX).toFloat()
+            canonball.y += (interval * canonballSpeedY).toFloat()
+
+            if(canonball.x + canonballRadius > obstacle.obstacle.left
+                && canonball.y +canonballRadius>obstacle.obstacle.top
+                && canonball.y-canonballRadius<obstacle.obstacle.bottom) {
+                canonballSpeedX *= -1
+                canonball.offset((3*canonballSpeedX*interval).toFloat(), 0f)
+            }
+            else if (canonball.x + canonballRadius > view.screenHeight
+                || canonball.x - canonballRadius < 0) {
+                canonballOnScreen = false
+            }
+            else if (canonball.y + canonballRadius > view.screenHeight
+                || canonball.y - canonballRadius < 0) {
+                canonballOnScreen = false
+            }
+            else if (canonball.x + canonballRadius > target.target.left
+                && canonball.y +canonballRadius>target.target.top
+                && canonball.y-canonballRadius<target.target.bottom) {
+                target.detectChoc(this)
+            }
+        }
+
+    }
 
     fun draw(canvas: Canvas) {
         canvas.drawCircle(canonball.x, canonball.y, canonballRadius, canonballPaint)
+    }
+
+    fun resetCanonBall() {
+        canonballOnScreen = false
     }
 }
