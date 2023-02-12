@@ -34,7 +34,8 @@ class CanonBall (var view: CanonView, val obstacle: Obstacle, val target: Target
                 && canonball.y +canonballRadius>obstacle.obstacle.top
                 && canonball.y-canonballRadius<obstacle.obstacle.bottom) {
                 canonballSpeedX *= -1
-                canonball.offset((3*canonballSpeedX*interval).toFloat(), 0f)
+                canonball.offset((5*canonballSpeedX*interval).toFloat(), 0f)
+                view.reduceTimeleft()
             }
             else if (canonball.x + canonballRadius > view.screenHeight
                 || canonball.x - canonballRadius < 0) {

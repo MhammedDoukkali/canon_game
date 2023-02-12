@@ -52,7 +52,24 @@ class Target (var targetDistance: Float, var targetDebut: Float,
     }
     fun detectChoc(ball: CanonBall) {
         val section = ((ball.canonball.y-target.top) / lengthPiece).toInt()
-        targetTouch[section] = true
-        ball.resetCanonBall()
+
+        if(section>=0 && section<Target_PIECES &&
+            !targetTouch[section]) {
+            targetTouch[section] = true
+            ball.resetCanonBall()
+            view.increaseTimeLeft()
+            if (++numTouchTarget == Target_PIECES) view.gameOver()
+        }
+
+
+
+    }
+
+    fun resetTarget() {
+        for(i in 0 until Target_PIECES)
+            targetTouch[i] = false
+        numTouchTarget = 0
+        targetSpeed = targetInitialSpeed
+        target.set(targetDistance, targetDebut, targetDistance+width, targetEnd)
     }
 }

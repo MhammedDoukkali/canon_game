@@ -36,4 +36,9 @@ class Obstacle (var obstacleDistance: Float,
             obstacle.offset(0f, up)
         }
     }
+
+    fun resetObstacle() {
+        obstacleSpeed = initialObstacleSpeed
+        obstacle.set(obstacleDistance, obstacleDebut, obstacleDistance + width, obstacleEnd)
+    }
 }
