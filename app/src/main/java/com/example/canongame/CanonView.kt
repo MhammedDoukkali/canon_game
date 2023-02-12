@@ -129,7 +129,7 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
                     )
                 )
                 builder.setPositiveButton(R.string.reset_game,
-                    DialogInterface.onClickListener{_, _->newGame()}
+                    DialogInterface.OnClickListener{_, _->newGame()}
                 )
                 return builder.create()
             }
@@ -138,7 +138,7 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
         activity.runOnUiThread(
             Runnable {
                 val ft = activity.supportFragmentManager.beginTransaction()
-                val prev = activity.supportFragmentManger.findFragmentByTag("dialog")
+                val prev = activity.supportFragmentManager.findFragmentByTag("dialog")
                 if(prev != null) {
                     ft.remove(prev)
                 }
@@ -161,7 +161,7 @@ SurfaceView(context, attributes, defStyleAttr),SurfaceHolder.Callback, Runnable{
             timeleft = 0.0
             gameOver = true
             drawing = false
-            showGameoverDialog(R.string.lose)
+            showGameOverDialog(R.string.lose)
         }
     }
 
